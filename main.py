@@ -27,7 +27,7 @@ period = n_years * 365
 @st.cache
 def load_stock(ticker):
     data = yf.download(ticker, START, TODAY)
-    data.reset_index(implace=True)
+    data.reset_index(inplace=True)
     return data
 
 data_load_state = st.text("Loading data...")
@@ -52,9 +52,10 @@ plot_raw_data()
 
 
 df_train = data['Date', 'Close']
-df_train = df_train.rename(columns={"Date":"ds", "Close":"y"})
-
-m = Prophet()
-m.fit(df_train)
-future = m.make_future_dataframe(periods=period)
-forecast = m.predict(future)
+print(df_train)
+# df_train = df_train.rename(columns={"Date":"ds", "Close":"y"})
+#
+# m = Prophet()
+# m.fit(df_train)
+# future = m.make_future_dataframe(periods=period)
+# forecast = m.predict(future)
