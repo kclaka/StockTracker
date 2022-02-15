@@ -1,16 +1,60 @@
-# This is a sample Python script.
+import streamlit as st
+from datetime import date
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import yfinance as yf
+
+from fbprophet import Prophet
+from fbprophet.plot import plot_plotly
+from plotly import graph_objs as go
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
+START = "2015-01-01"
+TODAY = date.today().strftime("%Y-%m-%d")
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+st.title("Stock Tracker and Predictor")
+
+
+stocks = ("TSLA", "MSFT", "F", "AAPL")
+selected = st.selectbox("Select Stock you want to predict", stocks)
+
+
+n_years = st.slider("Years of prediction:", 1, 5)
+period = n_years * 365
+
+@st.cache
+def load_stock(ticker):
+    data = yf.download(ticker, START, TODAY)
+    data.reset_index(implace=True)
+    return data
+
+data_load_state = st.text("Loading data...")
+data = load_stock(selected)
+data_load_state = st.text("Done!")
+
+st.subheader("Current Stock Price")
+st.write("Call Group member microservice here {Stock Price}")
+st.subheader('Raw data')
+st.write(data.tail())
+
+
+
+def plot_raw_data():
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name='stock_open'))
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name='stock_close'))
+    fig.layout.update(title_text="Time Series Data", xaxis_rangeslider_visible=True)
+    st.plotly_chart(fig)
+
+plot_raw_data()
+
+
+df_train = data['Date', 'Close']
+df_train = df_train.rename(columns={"Date":"ds", "Close":"y"})
+
+m = Prophet()
+m.fit(df_train)
+future = m.make_future_dataframe(periods=period)
+forecast = m.predict(future)
