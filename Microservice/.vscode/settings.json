@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.deploySubpath": ".",
+    "appService.defaultWebAppToDeploy": "/subscriptions/df373721-5432-4e83-9fb9-ca5448f92a95/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/bidonitpayments"
+}
